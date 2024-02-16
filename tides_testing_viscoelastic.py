@@ -73,7 +73,6 @@ volume_array, mass_array, gravity_array = \
     
     
     
-    
 from TidalPy.rheology import Andrade
 
 andrade_rheology = Andrade((0.3,0.03)) # zeta=0.1 for eta=log(20). zeta=0.3 for eta=log(19)
