@@ -1,6 +1,10 @@
 [project]
 name='TidalPy'
+<<<<<<< HEAD
 version = '0.5.1'
+=======
+version = '0.5.2.a0'
+>>>>>>> d8697f800c8fdec8d8bb45db1e81475e380db33a
 description='Tidal Dynamics and Thermal-Orbital Evolution Software Suite Implemented in Cython and Python'
 authors= [ 
     {name = 'Joe P. Renaud', email = 'TidalPy@gmail.com'}
