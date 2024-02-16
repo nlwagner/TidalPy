@@ -1,0 +1,12 @@
+# MANIFEST.in
+
+# Include data files used for plotting and benchmarking
+include TidalPy/utilities/graphics/multilayer/*.csv
+
+# Include World Configuration Files
+include TidalPy/WorldPack/*.zip
+
+# Include Cython pyx and pxd files
+global-include *.pxd
+global-include *.pyx
+include cython_extensions.json
