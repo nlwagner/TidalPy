@@ -28,12 +28,12 @@ vp = vp[ind]
 vs = vs[ind]
 rho = rho[ind]
 
-if (r[0] < r[-1]):
-    print(":: Reversing model to start from core")
-    r = r[::-1]
-    vp = vp[::-1]
-    vs = vs[::-1]
-    rho = rho[::-1]
+# if (r[0] < r[-1]):
+#     print(":: Reversing model to start from core")
+#     r = r[::-1]
+#     vp = vp[::-1]
+#     vs = vs[::-1]
+#     rho = rho[::-1]
 
 # Convert to S.I. Units
 r = np.multiply(r,1000.)
@@ -66,6 +66,7 @@ CMB = 1468E3#(1. / 2.) * planet_radius
 lyr1 = 2033E3
 lyr2 = 2360E3
 lyr3 = 3280E3
+
 
 radius_array = r#np.concatenate(
     # (
@@ -129,6 +130,8 @@ from TidalPy.rheology import Elastic
 elastic_rheology = Elastic()
 # Calculate the "complex" shear (really all Im[mu] = 0)
 complex_shear = np.empty(radius_array.shape, dtype=np.complex128)
+shear_array = np.ascontiguousarray(shear_array)
+viscosity_array = np.ascontiguousarray(viscosity_array)
 elastic_rheology.vectorize_modulus_viscosity(forcing_frequency, shear_array, viscosity_array, complex_shear)
 
 
@@ -147,9 +150,8 @@ static = np.full(len(r),False)
 static[np.where(mu==0)] = True
 static = tuple(static.tolist())
 
-state = np.full(len(r),'liquid' )
-state[np.where(mu!=0)] = 'solid'
-state = tuple(state.tolist())
+ur = tuple(np.copy(r))
+
 
 comp = tuple(np.full(len(r),True).tolist())
 
@@ -166,17 +168,16 @@ for i in range(1,11):
             complex_shear,
             forcing_frequency,
             planet_bulk_density,
-            layer_types=(state),
-            is_static_by_layer=(static),
-            # is_incompressible_by_layer=(False, False, False),
-            is_incompressible_by_layer=(comp),
-            upper_radius_by_layer=(ICB, CMB, lyr1, lyr2, lyr3, planet_radius),
+            layer_types=("solid","liquid","solid"),
+            is_static_by_layer=(False,True,False),
+            is_incompressible_by_layer=(True,True,True),
+            upper_radius_by_layer=(3000, 1850E3, 3391E3),
             degree_l=i,
             solve_for=('tidal','loading'),
-            use_kamata=False,
+            use_kamata=True,
             integration_method='DOP853',
-            integration_rtol = 1.0e-15,
-            integration_atol = 1.0e-15,
+            integration_rtol = 1.0e-12,
+            integration_atol = 1.0e-12,
             scale_rtols_by_layer_type = False,
             max_num_steps = 1_000_000,
             expected_size = 500,
@@ -202,11 +203,10 @@ for i in range(1,11):
             complex_shear,
             forcing_frequency,
             planet_bulk_density,
-            layer_types=(state),
-            is_static_by_layer=(static),
-            is_incompressible_by_layer=(ucomp),
-            # is_incompressible_by_layer=(False,True,True,True,True,True),
-            upper_radius_by_layer=(ICB, CMB, lyr1, lyr2, lyr3, planet_radius),
+            layer_types=("solid","liquid","solid"),
+            is_static_by_layer=(False,True,False),
+            is_incompressible_by_layer=(False, False, False),
+            upper_radius_by_layer=(3000, 1850E3, 3391E3),
             degree_l=i,
             solve_for=('tidal','loading'),
             use_kamata=False,
@@ -230,7 +230,7 @@ for i in range(1,11):
     hl_c[i-1] = radial_solution.h[1]
 
 
-
+#%%
 
 n_met = np.arange(2,21)
 plt.figure(figsize=(12,6))
