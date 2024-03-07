@@ -18,7 +18,7 @@ from TidalPy.utilities.graphics.multilayer import yplot
 
 sys.path.append(os.getcwd() + "models")
 
-int_model = 'models/AK_med.txt'
+int_model = 'models/CD_med.txt'
 # int_model = 'mars_MD.txt'
 
 r,vp,vs,rho = np.loadtxt(int_model,usecols=(0,1,2,3),delimiter=None,unpack=True)
@@ -60,7 +60,7 @@ planet_bulk_density = planet_mass / planet_volume
 forcing_frequency = 2. * np.pi / (687* 24.6 * 60 * 60)  # Phobos orbital freq
 
 
-N = 1000
+N = 50
 
 radius_array = np.ones((len(r)-1)*N)
 shear_array = np.ones((len(r)-1)*N)
@@ -162,7 +162,7 @@ comp = tuple(np.full(len(r),True).tolist())
 ucomp = tuple(np.full(len(r),False).tolist())
 
 
-for i in range(1,11):
+for i in range(0,11):
     radial_solution = \
         radial_solver(
             radius_array,
@@ -180,8 +180,8 @@ for i in range(1,11):
             solve_for=('tidal','loading'),
             use_kamata=True,
             integration_method='DOP853',
-            integration_rtol = 1.0e-8,
-            integration_atol = 1.0e-8,
+            integration_rtol = 1.0e-10,
+            integration_atol = 1.0e-10,
             scale_rtols_by_layer_type = False,
             max_num_steps = 1_000_000,
             expected_size = 500,
@@ -193,16 +193,10 @@ for i in range(1,11):
             raise_on_fail = True
             )
 
-    if i==1:
-        kp_i[i-1] = radial_solution.k[0]-radial_solution.k[0]
-        hp_i[i-1] = radial_solution.h[0]-radial_solution.k[0]
-        kl_i[i-1] = radial_solution.k[1]-radial_solution.k[1]
-        hl_i[i-1] = radial_solution.h[1]-radial_solution.k[1]
-    else:
-        kp_i[i-1] = radial_solution.k[0]
-        hp_i[i-1] = radial_solution.h[0]
-        kl_i[i-1] = radial_solution.k[1]
-        hl_i[i-1] = radial_solution.h[1]
+    kp_i[i-1] = radial_solution.k[0]
+    hp_i[i-1] = radial_solution.h[0]
+    kl_i[i-1] = radial_solution.k[1]
+    hl_i[i-1] = radial_solution.h[1]
     
     radial_solution = \
         radial_solver(
@@ -221,31 +215,26 @@ for i in range(1,11):
             solve_for=('tidal','loading'),
             use_kamata=False,
             integration_method='DOP853',
-            integration_rtol = 1.0e-8,
-            integration_atol = 1.0e-8,
+            integration_rtol = 1.0e-10,
+            integration_atol = 1.0e-10,
             scale_rtols_by_layer_type = False,
             max_num_steps = 1_000_000,
-            expected_size = 1000,
+            expected_size = 500,
             max_ram_MB = 500,
-            max_step = 500,
+            max_step = 1000,
             limit_solution_to_radius = True,
             nondimensionalize = True,
             verbose = False,
             raise_on_fail = True
             )
 
-    if i==1:
-        kp_c[i-1] = radial_solution.k[0]-radial_solution.k[0]
-        hp_c[i-1] = radial_solution.h[0]-radial_solution.k[0]
-        kl_c[i-1] = radial_solution.k[1]-radial_solution.k[1]
-        hl_c[i-1] = radial_solution.h[1]-radial_solution.k[1]
-    else:
-        kp_c[i-1] = radial_solution.k[0]
-        hp_c[i-1] = radial_solution.h[0]
-        kl_c[i-1] = radial_solution.k[1]
-        hl_c[i-1] = radial_solution.h[1]
+    kp_c[i-1] = radial_solution.k[0]
+    hp_c[i-1] = radial_solution.h[0]
+    kl_c[i-1] = radial_solution.k[1]
+    hl_c[i-1] = radial_solution.h[1]
     
     print(i)
+    
 
 
 #%%

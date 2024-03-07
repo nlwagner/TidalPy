@@ -18,7 +18,7 @@ planet_radius = 3.39e6
 planet_volume = (4. / 3.) * np.pi * (planet_radius**3)
 planet_bulk_density = planet_mass / planet_volume
 
-forcing_frequency = 2. * np.pi / (687* 24.6 * 60 * 60)  # Phobos orbital freq
+forcing_frequency = 2. * np.pi / (687* 24.6 * 60 * 60/2)  # Phobos orbital freq
 
 # Simple interior structure of solid IC, liquid OC, solid mantle
 N = 100
@@ -124,8 +124,8 @@ for i in range(1,11):
             solve_for=('tidal','loading'),
             use_kamata=False,
             integration_method='DOP853',
-            integration_rtol = 1.0e-15,
-            integration_atol = 1.0e-15,
+            integration_rtol = 1.0e-8,
+            integration_atol = 1.0e-8,
             scale_rtols_by_layer_type = False,
             max_num_steps = 1_000_000,
             expected_size = 500,
@@ -137,11 +137,17 @@ for i in range(1,11):
             raise_on_fail = True
             )
 
-    kp_i[i-1] = radial_solution.k[0]
-    hp_i[i-1] = radial_solution.h[0]
-    kl_i[i-1] = radial_solution.k[1]
-    hl_i[i-1] = radial_solution.h[1]
-    
+    if i==1:
+        kp_i[i-1] = radial_solution.k[0]-radial_solution.k[0]
+        hp_i[i-1] = radial_solution.h[0]-radial_solution.k[0]
+        kl_i[i-1] = radial_solution.k[1]-radial_solution.k[1]
+        hl_i[i-1] = radial_solution.h[1]-radial_solution.k[1]
+    else:
+        kp_i[i-1] = radial_solution.k[0]
+        hp_i[i-1] = radial_solution.h[0]
+        kl_i[i-1] = radial_solution.k[1]
+        hl_i[i-1] = radial_solution.h[1]
+        
     radial_solution = \
         radial_solver(
             radius_array,
@@ -160,8 +166,8 @@ for i in range(1,11):
             solve_for=('tidal','loading'),
             use_kamata=False,
             integration_method='DOP853',
-            integration_rtol = 1.0e-10,
-            integration_atol = 1.0e-10,
+            integration_rtol = 1.0e-8,
+            integration_atol = 1.0e-8,
             scale_rtols_by_layer_type = False,
             max_num_steps = 1_000_000,
             expected_size = 500,
@@ -172,14 +178,19 @@ for i in range(1,11):
             verbose = False,
             raise_on_fail = True
             )
+    if i==1:
+        kp_c[i-1] = radial_solution.k[0]-radial_solution.k[0]
+        hp_c[i-1] = radial_solution.h[0]-radial_solution.k[0]
+        kl_c[i-1] = radial_solution.k[1]-radial_solution.k[1]
+        hl_c[i-1] = radial_solution.h[1]-radial_solution.k[1]
+    else:
+        kp_c[i-1] = radial_solution.k[0]
+        hp_c[i-1] = radial_solution.h[0]
+        kl_c[i-1] = radial_solution.k[1]
+        hl_c[i-1] = radial_solution.h[1]
 
-    kp_c[i-1] = radial_solution.k[0]
-    hp_c[i-1] = radial_solution.h[0]
-    kl_c[i-1] = radial_solution.k[1]
-    hl_c[i-1] = radial_solution.h[1]
 
-
-
+#%%
 h_met1468 = np.array([-0.22552900381062727
 , -0.2316376415649225
 , -0.2458519380333036
@@ -231,7 +242,7 @@ plt.plot(degs,hl_c,'-.',label="compressible",ms=8,color='blue')
 plt.plot(n_met,h_met1468,'-.',label="Metivier",ms=8,color='green')
 
 plt.xticks(np.arange(0, 21,1))
-plt.xlim([2,10])
+plt.xlim([1,10])
 # plt.ylim([-.5,-0.1])
 plt.ylim([-.5,-0.10])
 
