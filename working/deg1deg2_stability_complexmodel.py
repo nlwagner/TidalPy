@@ -57,7 +57,7 @@ planet_radius = 3.39e6
 planet_volume = (4. / 3.) * np.pi * (planet_radius**3)
 planet_bulk_density = planet_mass / planet_volume
 
-forcing_frequency = 2. * np.pi / (687* 24.6 * 60 * 60)  # Phobos orbital freq
+# forcing_frequency = 2. * np.pi / (687* 24.6 * 60 * 60)  # Phobos orbital freq
 
 
 N = 2000
